@@ -1,3 +1,4 @@
+
 const mysql = require('mysql2');
 const cTable = require('console.table');
 const Company = require('./lib/Company');
@@ -11,34 +12,34 @@ const connection = mysql.createConnection({
     database: 'companyDB'
 });
 
-// connection.query(
-//     myCompany.getAllEmployeesQuery(),
-//     function (err, results, fields) {
-//         if (err) throw err;
-//         console.table(results);
-//         console.log(myCompany.getAllDepartmentsQuery());
-
-//         connection.end();
-//         // console.log(fields);
-//     }
-// );
-
 connection.connect(err => {
     if (err) throw err;
     console.log('connected as id ' + connection.threadId + '\n');
-    getAllDepartments();
+    //start the inquiry
 });
 
-getAllDepartments = () => {
-    console.log('Getting all departments...\n');
-    const query = connection.query(
-        myCompany.getAllDepartmentsQuery(),
-        function (err, res) {
-            if (err) throw err;
-            console.table(res);
-        }
-    );
-    // logs the actual query being run
-    console.log(query.sql);
-    connection.end();
-};
+
+connection.query(
+    myCompany.getAllDepartmentsQuery(),
+    function (err, results, fields) {
+        if (err) throw err;
+        //return results in nice table
+        console.table(results);
+        //return query
+        console.log(myCompany.getAllDepartmentsQuery());
+        //return results as normal
+        console.log(results);
+
+        results.forEach(element => {
+            console.log(element.id + " - " + element.name);
+        });
+
+        var testArray = results.map(function (obj) {
+            return obj.id + "-" + obj.name;
+        })
+        console.log(testArray);
+
+        connection.end();
+        // console.log(fields);
+    }
+);
