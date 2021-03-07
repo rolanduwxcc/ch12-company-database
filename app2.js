@@ -3,26 +3,14 @@ const inquirer = require("inquirer");
 const cTable = require("console.table");
 const Company = require("./lib/Company");
 const ScreenManager = require("inquirer/lib/utils/screen-manager");
+const db = require('./db');
 
 const myCompany = new Company("Rolanduwxcc", 2021);
 console.log(myCompany.printInfo());
 
-const connection = mysql.createConnection({
-  host: "localhost",
-  user: "root",
-  password: "the password",
-  database: "companyDB",
-});
 
-connection.connect((err) => {
-  if (err) throw err;
-  console.log("connected as id " + connection.threadId + "\n");
-  console.clear();
-  mainMenu();
-});
 
 mainMenu = () => {
-  myCompany.printInfo();
   console.log(`
     ===========================
     Please Select an Option
@@ -79,6 +67,7 @@ getAllDepartments = () => {
     function (err, res) {
       if (err) throw err;
       console.clear();
+      myCompany.printInfo();
       console.table(res);
       mainMenu();
     }
@@ -91,6 +80,7 @@ getAllRoles = () => {
     function (err, res) {
       if (err) throw err;
       console.clear();
+      myCompany.printInfo();
       console.table(res);
       mainMenu();
     }
@@ -98,15 +88,19 @@ getAllRoles = () => {
 };
 
 getAllEmployees = () => {
-    const query = connection.query(
-        myCompany.getAllEmployeesQuery(),
-        function (err, res) {
-            if (err) throw err;
-            console.clear()
-            console.table(res);
-            mainMenu();
-        }
-    );
+    db.findAllEmployees().then(userData => {
+        console.clear()
+        myCompany.printInfo();
+        console.table(res);
+        mainMenu();
+
+    })
+    // const query = connection.query(
+    //     myCompany.getAllEmployeesQuery(),
+    //     function (err, res) {
+    //         if (err) throw err;
+    //     }
+    // );
 };
 
 addNewDep = () => {
@@ -130,46 +124,59 @@ addNewDep = () => {
 };
 
 getDepartmentChoices = () => {
-    let depList = [];
-    const query = connection.query(
-        myCompany.getAllDepartmentsQuery(),
-        function (err, res) {
-            if (err) throw err;
-            depList = res.map(function (obj) { return obj.id + "-" + obj.name });
-        }
-    );
-    return depList;
+    return db.getAllDepartments().then(departmentData => {
+        return departmentList.map(obj => obj.id + '-' + obj.name)
+    })
+
+    // try {
+    //     const query = await connection.promise().query(
+    //         myCompany.getAllDepartmentsQuery()
+    //         //,
+    //         // function (err, res) {
+    //         //     if (err) throw err;
+    //         //     // return res.map(function (obj) { return obj.id + "-" + obj.name });
+    //         //     return res;
+    //         // }
+    //     );
+    //     return query.map(obj => obj.id + '-' + obj.name);
+    // }
+    // catch (error) {
+    //     console.error(error)
+    // }
 }
 
 addNewRole = () => {
-    inquirer.prompt([
-        {
-            message: 'Enter the NEW role name: ',
-            type: 'input',
-            name: 'title'
-        },
-        {
-            message: 'Enter the salary for this role: $',
-            type: 'number',
-            name: 'salary'
-        },
-        {
-            message: 'Enter the department for this role: ',
-            type: 'list',
-            choices: getDepartmentChoices(),
-            name: 'depId'
-        }
-    ]).then(({title, salary, depId}) => {
-        const query = connection.query(
-            myCompany.addRoleQuery(title, salary, depId),
-            function (err, res) {
-                if (err) throw err;
-                console.clear();
-                console.table(res);
-                mainMenu();
-            }
-        );
-    })
+  getDepartmentChoices().then(choices => {
+      inquirer.prompt([
+          {
+              message: 'Enter the NEW role name: ',
+              type: 'input',
+              name: 'title'
+          },
+          {
+              message: 'Enter the salary for this role: $',
+              type: 'number',
+              name: 'salary'
+          },
+          {
+              message: 'Enter the department for this role: ',
+              type: 'list',
+              choices: choices,
+              name: 'depId'
+          }
+      ]).then(({title, salary, depId}) => {
+          const query = connection.query(
+              myCompany.addRoleQuery(title, salary, depId),
+              function (err, res) {
+                  if (err) throw err;
+                  console.clear();
+                  console.table(res);
+                  mainMenu();
+              }
+          );
+      })
+
+  })
 };
 
 // addNewEmployee = (fName,lName,role,manager) => {
