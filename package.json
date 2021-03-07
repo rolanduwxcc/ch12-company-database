@@ -1,0 +1,30 @@
+{
+  "name": "ch12-company-database",
+  "description": "An app that tracks company employee data.",
+  "version": "1.0.0",
+  "main": "app.js",
+  "directories": {
+    "lib": "lib"
+  },
+  "devDependencies": {},
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1",
+    "start": "node app.js"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/rolanduwxcc/ch12-company-database.git"
+  },
+  "author": "Rolanduwxcc",
+  "license": "MIT",
+  "bugs": {
+    "url": "https://github.com/rolanduwxcc/ch12-company-database/issues"
+  },
+  "homepage": "https://github.com/rolanduwxcc/ch12-company-database#readme",
+  "dependencies": {
+    "console.table": "^0.10.0",
+    "dotenv": "^8.2.0",
+    "inquirer": "^8.0.0",
+    "mysql2": "^2.2.5"
+  }
+}
