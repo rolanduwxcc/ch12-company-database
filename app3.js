@@ -1,12 +1,11 @@
 const mysql = require("mysql2");
 const inquirer = require("inquirer");
 const cTable = require("console.table");
-const Company = require("./lib/Company");
 const ScreenManager = require("inquirer/lib/utils/screen-manager");
+
+//Establishes connection initializes all queries to run
 const db = require('./db');
 
-// const myCompany = new Company("Rolanduwxcc", 2021);
-// console.log(myCompany.printInfo());
 
 function welcomeBanner() {
     console.log("Hello Company Man");
