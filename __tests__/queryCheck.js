@@ -1,6 +1,6 @@
 const mysql = require('mysql2');
 const cTable = require('console.table');
-const Company = require('./lib/Company');
+const Company = require('../lib/Company');
 const myCompany = new Company("Rolanduwxcc", 2021);
 console.log(myCompany.printInfo());
 
@@ -36,9 +36,33 @@ getAllDepartments = () => {
         function (err, res) {
             if (err) throw err;
             console.table(res);
+            getAllRoles();
         }
     );
     // logs the actual query being run
     console.log(query.sql);
-    connection.end();
+};
+  
+getAllRoles = () => {
+    console.log('Getting all roles...\n');
+    const query = connection.query(
+        myCompany.getAllRolesQuery(),
+        function (err, res) {
+            if (err) throw err;
+            console.table(res);
+            getAllEmployees();
+        }
+    );
+};
+
+getAllEmployees = () => {
+    console.log('Getting all employees...\n');
+    const query = connection.query(
+        myCompany.getAllEmployeesQuery(),
+        function (err, res) {
+            if (err) throw err;
+            console.table(res);
+            connection.end();
+        }
+    );
 };
