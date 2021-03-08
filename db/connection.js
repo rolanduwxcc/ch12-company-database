@@ -10,8 +10,6 @@ const connection = mysql.createConnection({
     if (err) throw err;
     console.log("connected as id " + connection.threadId + "\n");
     console.clear();
-    // myCompany.printInfo();
-    // mainMenu();
   });
 
   module.exports = connection;

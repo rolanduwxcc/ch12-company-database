@@ -54,7 +54,6 @@ class DB {
         connection.end();
     }
 
-
 };
 
 module.exports = new DB(connection);

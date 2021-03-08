@@ -1,45 +1,230 @@
+const inquirer = require('inquirer')
+const mysql = require('mysql2')
+const cTable = require('console.table')
+const figlet = require('figlet')
+const companyName = 'FinTech Crows'
 
-const mysql = require('mysql2');
-const cTable = require('console.table');
-const Company = require('./lib/Company');
-const myCompany = new Company("Rolanduwxcc", 2021);
-console.log(myCompany.printInfo());
+const db = require('./db')
 
-const connection = mysql.createConnection({
-    host: 'localhost',
-    user: 'root',
-    password: 'the password',
-    database: 'companyDB'
-});
+//main questions
+const mainQuestions = [
+    {
+        name: "action",
+        type: "list",
+        message: "What would you like to do?",
+        choices: [
+            "View Departments",
+            "View Roles",
+            "View Employees",
+            "Add Department",
+            "Add Role",
+            "Add Employee",
+            "Update Employee Role",
+            "Quit",
+        ],
+    },
+]
 
-connection.connect(err => {
-    if (err) throw err;
-    console.log('connected as id ' + connection.threadId + '\n');
-    //start the inquiry
-});
-
-
-connection.query(
-    myCompany.getAllDepartmentsQuery(),
-    function (err, results, fields) {
-        if (err) throw err;
-        //return results in nice table
-        console.table(results);
-        //return query
-        console.log(myCompany.getAllDepartmentsQuery());
-        //return results as normal
-        console.log(results);
-
-        results.forEach(element => {
-            console.log(element.id + " - " + element.name);
-        });
-
-        var testArray = results.map(function (obj) {
-            return obj.id + "-" + obj.name;
-        })
-        console.log(testArray);
-
-        connection.end();
-        // console.log(fields);
+const addDepartmentQuestions = [
+    {
+        message: 'Enter the NEW department name: ',
+        type: 'input',
+        name: 'name'
     }
-);
+]
+
+function addRole() {
+    // const addRoleQuestions = 
+    db.findAllDepartments().then(result => {
+        // console.log('This is the result': )
+        // console.log(result)
+        if (true) {
+            inquirer.prompt(
+                [
+                    {
+                        message: 'Enter the NEW role name: ',
+                        type: 'input',
+                        name: 'title'
+                    },
+                    {
+                        message: 'Enter the salary for this role: $',
+                        type: 'number',
+                        name: 'salary'
+                    },
+                    {
+                        message: 'Enter the department for this role: ',
+                        type: 'list',
+                        name: 'department',
+                        choices: result[0].map(obj => obj.id + '-' + obj.name)
+                    }
+                ]
+            ).then(({title,salary,department}) => {
+                db.addRole(title,salary,department.split('-')[0]).then(res => {
+                    console.clear()
+                    console.log('Role ' + res[0].insertId + ' was added')
+                })
+                db.findAllRoles().then(res => {
+                    console.table(res[0])
+                    banner()
+                    menu()
+                })
+            })
+        }
+    })
+}
+
+function addNewEmployee() {
+    db.findAllRoles().then(roles => {
+        db.findAllEmployees().then(managers => {
+            inquirer.prompt(
+                [
+                    {
+                        message: 'Enter the employee FIRST name: ',
+                        type: 'input',
+                        name: 'firstName'
+                    },
+                    {
+                        message: 'Enter the employee LAST name: ',
+                        type: 'input',
+                        name: 'lastName'
+                    },
+                    {
+                        message: 'Enter the role id: ',
+                        type: 'list',
+                        name: 'role',
+                        choices: roles[0].map(obj => obj.id + '-' + obj.title)
+                    },
+                    {
+                        message: 'Enter the manager id for this employee: ',
+                        type: 'list',
+                        name: 'manager',
+                        choices: managers[0].map(obj => obj.id + '-' + obj.firstName + ' ' + obj.lastName)
+                    }
+                ]
+            ).then(({firstName, lastName, role, manager}) => {
+                db.addEmployee(firstName,lastName,role.split('-')[0],manager.split('-')[0]).then(res =>  {
+                    console.clear()
+                    console.log('Employee ' + res[0].insertId + ' was added')
+                })
+                db.findAllEmployees().then(res => {
+                    console.table(res[0])
+                    banner()
+                    menu()
+                })
+            })
+        })
+    })
+}
+
+function updateAnEmployeeRole() {
+    db.findAllRoles().then(roles => {
+        db.findAllEmployees().then(employees => {
+            inquirer.prompt(
+                [
+                    {
+                        message: 'Select an employee: ',
+                        type: 'list',
+                        name: 'employee',
+                        choices: employees[0].map(obj => obj.id + '-' + obj.firstName + ' ' + obj.lastName)
+                    },
+                    {
+                        message: 'Enter the NEW role id for this employee: ',
+                        type: 'list',
+                        name: 'role',
+                        choices: roles[0].map(obj => obj.id + '-' + obj.title)
+                    }
+                ]
+            ).then(({ employee, role }) => {
+                db.updateEmployeeRole(employee.split('-')[0], role.split('-')[0]).then(res => {
+                    console.clear
+                    console.log('Employee ' + res[0].insertId + ' role was updated')
+                })
+                db.findAllEmployees().then(res => {
+                    console.table(res[0])
+                    banner()
+                    menu()
+                })
+            })
+        })
+    })
+}
+
+function menu() {
+    inquirer.prompt(mainQuestions).then(({action}) => {
+        if (action === "View Departments") {
+            db.findAllDepartments().then(res => {
+                console.clear()
+                console.table(res[0])
+                banner()
+                menu()
+            })
+        } else if (action === "View Roles") {
+            db.findAllRoles().then(res => {
+                console.clear()
+                console.table(res[0])
+                banner()
+                menu()
+            });
+        } else if (action === "View Employees") {
+            db.findAllEmployees().then(res => {
+                console.clear()
+                console.table(res[0])
+                banner()
+                menu()
+            })
+        } else if (action === "Add Department") {
+            inquirer.prompt(addDepartmentQuestions).then(({name}) => {
+                db.addDepartment(name).then(res => {
+                    console.clear()
+                    console.log('Department ' + res[0].insertId + ' was added')
+                })
+                db.findAllDepartments().then(res => {
+                    console.table(res[0])
+                    banner()
+                    menu()
+                })
+            })
+        } else if (action === "Add Role") {
+            addRole()   
+
+        } else if (action === "Add Employee") {
+            addNewEmployee()
+
+        } else if (action === "Update Employee Role") {
+            updateAnEmployeeRole()
+            
+        } else if (action === "Quit") {
+            return db.endConnection()
+        }
+    })
+}
+
+//set the companyName at the top of file to change it.
+function banner() {
+    return console.log(`
+
+---------------------------------------------------------------------------
+
+                ${companyName} - Company Database
+                Powered by Rolanduwxcc, LTD., 2021
+---------------------------------------------------------------------------   
+    `)
+
+}
+
+inquirer.prompt(
+    [
+        {
+            name: 'startDB',
+            message: 'Welcome shall we begin? ',
+            type: 'confirm',
+            default: 'true'
+        }
+    ]).then(({startDB }) => {
+        if (!startDB) {
+            db.endConnection()
+            return;
+        }
+        banner() 
+        menu()
+    })
