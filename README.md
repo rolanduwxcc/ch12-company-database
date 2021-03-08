@@ -30,8 +30,8 @@ W Rowland => find me on [GitHub](https://github.com/rolanduwxcc) or email me at 
   
 ## Screenshots
 [YouTube Walk Through](https://youtu.be/bMugmGb9_eY)<br>
-![CLI Giph]('/assets/media/cli_employee_db.gif')<br>
-![CLI Screenshot]('/assets/media/cli-screenshot.png')
+![CLI Gif]('/assets/media/cli_employee_db.gif')<br>
+![CLI Screenshot]('./assets/media/cli-screenshot.png')
 
 ## License & Copyrights
 Licensed under the [MIT License]('./LICENSE')
