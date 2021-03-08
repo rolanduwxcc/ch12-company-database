@@ -29,9 +29,8 @@
 W Rowland => find me on [GitHub](https://github.com/rolanduwxcc) or email me at rolanduwxcc@gmail.com
   
 ## Screenshots
-[YouTube Walk Through](https://youtu.be/bMugmGb9_eY)<br>
-![CLI Gif]('/assets/media/cli_employee_db.gif')<br>
-![CLI Screenshot]('./assets/media/cli-screenshot.png')
+[Click for a YouTube Walk Through](https://youtu.be/bMugmGb9_eY)<br>
+<img width="586" alt="cli-screenshot" src="https://user-images.githubusercontent.com/74523466/110277309-95cf1600-7f9a-11eb-96ef-694bdaa679c7.png">
 
 ## License & Copyrights
 Licensed under the [MIT License]('./LICENSE')
