@@ -20,11 +20,10 @@
 ## Built with These Tools
 * JavaScript
 * [Node.js](https://nodejs.org/en/)
-* [MySQL]()
-* [MySQL2.js]()
-* [Inquirer.js]()
-* [Console.Table.js]()
-
+* [MySQL](https://www.mysql.com/)
+* [MySQL2.js](https://www.npmjs.com/package/mysql2)
+* [Inquirer.js](https://www.npmjs.com/package/inquirer)
+* [Console.Table.js](https://www.npmjs.com/package/console.table)
 
 ## Contributions & Contact Info
 W Rowland => find me on [GitHub](https://github.com/rolanduwxcc) or email me at rolanduwxcc@gmail.com
