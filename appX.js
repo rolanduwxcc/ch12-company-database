@@ -71,7 +71,6 @@ function addRole() {
 }
 
 function addNewEmployee() {
-    // const addEmployeeQuestions =
     db.findAllRoles().then(roles => {
         db.findAllEmployees().then(managers => {
             inquirer.prompt(
@@ -113,19 +112,37 @@ function addNewEmployee() {
     })
 }
 
-
-const updateEmployeeRoleQuestions = [
-    {
-        message: 'Enter the employee id: ',
-        type: 'number',
-        name: 'employeeId'
-    },
-    {
-        message: 'Enter the NEW role id for this employee: ',
-        type: 'number',
-        name: 'roleId'
-    }
-]
+function updateAnEmployeeRole() {
+    db.findAllRoles().then(roles => {
+        db.findAllEmployees().then(employees => {
+            inquirer.prompt(
+                [
+                    {
+                        message: 'Select an employee: ',
+                        type: 'list',
+                        name: 'employee',
+                        choices: employees[0].map(obj => obj.id + '-' + obj.firstName + ' ' + obj.lastName)
+                    },
+                    {
+                        message: 'Enter the NEW role id for this employee: ',
+                        type: 'list',
+                        name: 'role',
+                        choices: roles[0].map(obj => obj.id + '-' + obj.title)
+                    }
+                ]
+            ).then(({ employee, role }) => {
+                db.updateEmployeeRole(employee.split('-')[0], role.split('-')[0]).then(res => {
+                    console.clear
+                    console.log('Employee ' + res[0].insertId + ' role was updated')
+                })
+                db.findAllEmployees().then(res => {
+                    console.table(res[0])
+                    menu()
+                })
+            })
+        })
+    })
+}
 
 function menu() {
     inquirer.prompt(mainQuestions).then(({action}) => {
@@ -183,16 +200,17 @@ function menu() {
             //     })
             // })
         } else if (action === "Update Employee Role") {
-            inquirer.prompt(updateEmployeeRoleQuestions).then(({employeeId, roleId}) => {
-                db.updateEmployeeRole(employeeId,roleId).then(res => {
-                    console.clear()
-                    console.log('Employee ' + res[0].insertId + ' was updated')
-                })
-                db.findAllEmployees().then(res => {
-                    console.table(res[0])
-                    menu()
-                })
-            })
+            updateAnEmployeeRole()
+            // inquirer.prompt(updateEmployeeRoleQuestions).then(({employeeId, roleId}) => {
+            //     db.updateEmployeeRole(employeeId,roleId).then(res => {
+            //         console.clear()
+            //         console.log('Employee ' + res[0].insertId + ' was updated')
+            //     })
+            //     db.findAllEmployees().then(res => {
+            //         console.table(res[0])
+            //         menu()
+            //     })
+            // })
         } else if (action === "Quit") {
             return db.endConnection()
         }
