@@ -3,7 +3,6 @@ const mysql = require('mysql2')
 const cTable = require('console.table')
 
 const db = require('./db/')
-const { findAllRoles } = require('./db/')
 
 //main questions
 const mainQuestions = [
@@ -58,8 +57,6 @@ function addRole() {
                     }
                 ]
             ).then(({title,salary,department}) => {
-                // console.log(department)
-                // console.log(department.split('-'))
                 db.addRole(title,salary,department.split('-')[0]).then(res => {
                     console.clear()
                     console.log('Role ' + res[0].insertId + ' was added')
@@ -73,28 +70,49 @@ function addRole() {
     })
 }
 
-const addEmployeeQuestions = [
-    {
-        message: 'Enter the employee FIRST name: ',
-        type: 'input',
-        name: 'firstName'
-    },
-    {
-        message: 'Enter the employee LAST name: ',
-        type: 'input',
-        name: 'lastName'
-    },
-    {
-        message: 'Enter the role id: ',
-        type: 'number',
-        name: 'roleId'
-    },
-    {
-        message: 'Enter the department id for this employee: ',
-        type: 'number',
-        name: 'depId'
-    }
-]
+function addNewEmployee() {
+    // const addEmployeeQuestions =
+    db.findAllRoles().then(roles => {
+        db.findAllEmployees().then(managers => {
+            inquirer.prompt(
+                [
+                    {
+                        message: 'Enter the employee FIRST name: ',
+                        type: 'input',
+                        name: 'firstName'
+                    },
+                    {
+                        message: 'Enter the employee LAST name: ',
+                        type: 'input',
+                        name: 'lastName'
+                    },
+                    {
+                        message: 'Enter the role id: ',
+                        type: 'list',
+                        name: 'role',
+                        choices: roles[0].map(obj => obj.id + '-' + obj.title)
+                    },
+                    {
+                        message: 'Enter the manager id for this employee: ',
+                        type: 'list',
+                        name: 'manager',
+                        choices: managers[0].map(obj => obj.id + '-' + obj.firstName + ' ' + obj.lastName)
+                    }
+                ]
+            ).then(({firstName, lastName, role, manager}) => {
+                db.addEmployee(firstName,lastName,role.split('-')[0],manager.split('-')[0]).then(res =>  {
+                    console.clear()
+                    console.log('Employee ' + res[0].insertId + ' was added')
+                })
+                db.findAllEmployees().then(res => {
+                    console.table(res[0])
+                    menu()
+                })
+            })
+        })
+    })
+}
+
 
 const updateEmployeeRoleQuestions = [
     {
@@ -153,16 +171,17 @@ function menu() {
             //     })
             // })
         } else if (action === "Add Employee") {
-            inquirer.prompt(addEmployeeQuestions).then(({firstName,lastName,roleId,depId}) => {
-                db.addEmployee(firstName,lastName,roleId,depId).then(res => {
-                    console.clear()
-                    console.log('Employee ' + res[0].insertId + ' was added')
-                })
-                db.findAllEmployees().then(res => {
-                    console.table(res[0])
-                    menu()
-                })
-            })
+            addNewEmployee()
+            // inquirer.prompt(addEmployeeQuestions).then(({firstName,lastName,roleId,depId}) => {
+            //     db.addEmployee(firstName,lastName,roleId,depId).then(res => {
+            //         console.clear()
+            //         console.log('Employee ' + res[0].insertId + ' was added')
+            //     })
+            //     db.findAllEmployees().then(res => {
+            //         console.table(res[0])
+            //         menu()
+            //     })
+            // })
         } else if (action === "Update Employee Role") {
             inquirer.prompt(updateEmployeeRoleQuestions).then(({employeeId, roleId}) => {
                 db.updateEmployeeRole(employeeId,roleId).then(res => {
