@@ -40,4 +40,4 @@ VALUES
     ('Heppy', 'Daniels', 7, 2),
     ('Snuffy', 'Smith', 9, 3),
     ('Karl', 'Onit', 10, 3),
-    ('Sally', 'Sunbags', 11, 1); 
+    ('Billy', 'Beanbags', 11, 1); 

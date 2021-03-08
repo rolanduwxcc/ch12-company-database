@@ -9,17 +9,21 @@ class DB {
 
     findAllEmployees() {
         return this.connection.promise().query(
-            `SELECT * FROM employees`
+            // `SELECT * FROM employees`
+            `SELECT e.id, e.firstName, e.lastName, title, name dept, salary, CONCAT(m.firstName,' ',m.lastName) manager FROM employees e LEFT
+            JOIN roles ON e.roleId = roles.id LEFT JOIN departments ON roles.departmentId = departments.id LEFT JOIN employees m ON e.managerId = m.id;`
         )
     }
     findAllDepartments() {
         return this.connection.promise().query(
-            `SELECT * FROM departments`)
+            `SELECT id, name FROM departments`)
     }
 
     findAllRoles() {
         return this.connection.promise().query(
-            `SELECT * FROM roles`)
+            // `SELECT * FROM roles`
+            `SELECT r.id, r.title, name dept, salary FROM roles r LEFT JOIN departments ON r.departmentId = departments.id`
+        )
     }
 
     addDepartment(name) {

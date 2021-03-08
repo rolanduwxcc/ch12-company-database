@@ -1,7 +1,6 @@
 const inquirer = require('inquirer')
 const mysql = require('mysql2')
 const cTable = require('console.table')
-const figlet = require('figlet')
 const companyName = 'FinTech Crows'
 
 const db = require('./db')
